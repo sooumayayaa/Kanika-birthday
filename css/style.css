@@ -120,41 +120,32 @@ body.single #book-holder {
   opacity: 0;
 }
 
-/* The letter that slides up out of the envelope after she clicks. */
-#letter-peek {
-  inset: auto;
-  left: 25%;
-  top: 22%;
-  width: 46%;
-  height: auto;
-  aspect-ratio: var(--page-ratio);
-  border-radius: 6px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-  opacity: 0;
-  transform: translateY(25%) scale(0.85);
+#page-envelope.opened {
+  cursor: pointer; /* click the open envelope to read the letter */
+}
+
+/* ---- Confetti -------------------------------------------------------- */
+#confetti {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 20;
   pointer-events: none;
 }
 
-#page-envelope.opened #letter-peek {
-  animation: letter-out 1.4s ease forwards 0.7s; /* starts once the envelope has opened */
-  pointer-events: auto;
-  cursor: pointer;
-}
-
-/* Rises out, then keeps gently bobbing so she knows to click it. */
-@keyframes letter-out {
-  0% {
-    opacity: 0;
-    transform: translateY(25%) scale(0.85);
-  }
-  70% {
-    opacity: 1;
-    transform: translateY(-14%) scale(1.02) rotate(-2deg);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(-10%) scale(1) rotate(-1deg);
-  }
+/* ---- Mic level (only with ?debug at the end of the address) ---------- */
+#mic-meter {
+  position: fixed;
+  left: 12px;
+  bottom: 12px;
+  z-index: 30;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  font: 13px/1.4 monospace;
+  white-space: pre;
 }
 
 /* ---- Overlays (video and letter) ------------------------------------- */

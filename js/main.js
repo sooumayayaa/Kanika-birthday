@@ -5,8 +5,8 @@
    1. Closed card      click / → key  → card opens (cover on the left, cake on the right)
    2. Cake             she blows into the mic → candle goes out, smoke rises
    3. Video            plays in a box over the darkened card → page turns by itself
-   4. Envelope         click → envelope opens, the letter slides out
-   5. Letter           click the letter → it opens big over the darkened card
+   4. Envelope         click → closed envelope changes to the open one
+   5. Letter           click the open envelope → the letter opens over the darkened card
 
    The background song plays the whole time, except during the video.
    ===================================================================== */
@@ -25,7 +25,6 @@ $("img-cake-lit").src = CONFIG.pages.cakeLit;
 $("img-cake-unlit").src = CONFIG.pages.cakeUnlit;
 $("img-cake-back")?.setAttribute("src", CONFIG.pages.cakeUnlit);
 $("img-envelope").src = CONFIG.pages.envelopeOpen;
-$("letter-peek").src = CONFIG.pages.letter;
 $("img-letter").src = CONFIG.pages.letter;
 $("letter-text").textContent = CONFIG.letter;
 
@@ -220,6 +219,8 @@ document.addEventListener("keydown", (e) => {
 
 // ---- Blowing out the candle ------------------------------------------
 let micStream = null;
+const debug = new URLSearchParams(location.search).has("debug");
+if (debug) $("mic-meter").hidden = false;
 let listening = false;
 let hintTimer = null;
 
@@ -229,10 +230,10 @@ async function startListeningForBlow() {
   }
 
   try {
-    // Noise filter off (a blow *is* noise). Echo cancellation on, so the
-    // background song coming out of the speakers isn't heard as blowing.
+    // All the browser's voice filters off: a blow *is* noise, and on a Mac
+    // echo cancellation turns on a voice filter that removes it.
     micStream = await navigator.mediaDevices.getUserMedia({
-      audio: { echoCancellation: true, noiseSuppression: false, autoGainControl: false },
+      audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false },
     });
   } catch (err) {
     console.warn("No microphone, she can click the flame instead.", err);
@@ -252,9 +253,12 @@ async function startListeningForBlow() {
 
   listening = true;
   let loudSince = null;
+  let background = 0; // the room's normal noise level, learned while it's quiet
 
-  function check() {
-    if (!listening) return;
+  // Checked on a timer rather than every animation frame, so it keeps
+  // working even if the browser slows animations down.
+  const timer = setInterval(() => {
+    if (!listening) return clearInterval(timer);
 
     // Volume of the last few milliseconds (root mean square, 0..1).
     analyser.getFloatTimeDomainData(samples);
@@ -262,15 +266,19 @@ async function startListeningForBlow() {
     for (const s of samples) sum += s * s;
     const volume = Math.sqrt(sum / samples.length);
 
+    const threshold = Math.max(CONFIG.blow.sensitivity, background * CONFIG.blow.aboveBackground);
     // Ignore the mic while your voice note plays, so it can't blow the candle.
-    const loud = volume > CONFIG.blow.sensitivity && !isPlaying(sounds.blowHint);
+    const loud = volume > threshold && !isPlaying(sounds.blowHint);
+
+    // Slowly follow the background noise, but only while she isn't blowing.
+    if (!loud) background = background * 0.97 + volume * 0.03;
+
+    if (debug) $("mic-meter").textContent = `mic ${volume.toFixed(3)}\nneeds ${threshold.toFixed(3)}`;
+
     if (!loud) loudSince = null;
     else if (loudSince === null) loudSince = performance.now();
-    else if (performance.now() - loudSince >= CONFIG.blow.holdMs) return blowOutCandle();
-
-    requestAnimationFrame(check);
-  }
-  check();
+    else if (performance.now() - loudSince >= CONFIG.blow.holdMs) blowOutCandle();
+  }, 30);
 }
 
 function stopListeningForBlow() {
@@ -424,3 +432,68 @@ function closeLetter() {
 $("letter-overlay").addEventListener("click", (e) => {
   if (!e.target.closest("#letter-card")) closeLetter();
 });
+
+// ---- Party popper confetti when the site opens --------------------------
+// Two poppers in the bottom corners shoot paper pieces up and inwards,
+// then they flutter down and fade out.
+const CONFETTI_COLORS = ["#a8262c", "#f3e6d3", "#f2a7b5", "#e0b04a", "#3d5fa8", "#7e8b3a"];
+
+function partyPopper() {
+  const canvas = $("confetti");
+  const ctx = canvas.getContext("2d");
+  const scale = window.devicePixelRatio || 1;
+  const width = (canvas.width = innerWidth * scale);
+  const height = (canvas.height = innerHeight * scale);
+
+  const pieces = [];
+  for (const side of [-1, 1]) {
+    // side -1 = left popper, 1 = right popper
+    for (let i = 0; i < 90; i++) {
+      const angle = -Math.PI / 2 - side * (0.15 + Math.random() * 0.45); // up and inwards
+      const speed = height * (0.022 + Math.random() * 0.016);
+      pieces.push({
+        x: side < 0 ? width * 0.03 : width * 0.97,
+        y: height * 1.02,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        size: (9 + Math.random() * 9) * scale,
+        spin: Math.random() * Math.PI,
+        spinSpeed: (Math.random() - 0.5) * 0.3,
+        color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
+      });
+    }
+  }
+
+  let last = performance.now();
+  const start = last;
+  function frame(now) {
+    const step = Math.min(3, (now - last) / 16.7); // keeps speed the same on slow screens
+    last = now;
+    const age = (now - start) / 1000;
+
+    ctx.clearRect(0, 0, width, height);
+    ctx.globalAlpha = Math.max(0, Math.min(1, (5 - age) / 1.5)); // fade out at the end
+    for (const p of pieces) {
+      p.vy += height * 0.00035 * step; // gravity
+      p.vx *= 0.985 ** step; // air slows them down
+      p.vy *= 0.985 ** step;
+      p.x += p.vx * step + Math.sin(age * 4 + p.spin) * scale * 0.6;
+      p.y += p.vy * step;
+      p.spin += p.spinSpeed * step;
+
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.spin);
+      ctx.scale(1, Math.cos(p.spin * 2)); // looks like it's flipping over
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2);
+      ctx.restore();
+    }
+
+    if (age < 5) requestAnimationFrame(frame);
+    else ctx.clearRect(0, 0, width, height);
+  }
+  requestAnimationFrame(frame);
+}
+
+partyPopper();

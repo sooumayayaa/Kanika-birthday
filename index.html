@@ -42,11 +42,10 @@
         </div>
 
         <!-- Envelope. The closed image sits on top of the open one until she
-             clicks, then it fades away and the letter slides out -->
+             clicks, then it fades away. Clicking the open one opens the letter -->
         <div class="page" id="page-envelope" data-density="hard">
           <img id="img-envelope" alt="Open me if you aren't crying already" draggable="false" />
           <img id="envelope-closed" alt="" draggable="false" />
-          <img id="letter-peek" alt="A letter" draggable="false" />
         </div>
       </div>
     </main>
@@ -64,6 +63,12 @@
         <div id="letter-text"></div>
       </div>
     </div>
+
+    <!-- Party popper confetti when the site opens -->
+    <canvas id="confetti"></canvas>
+
+    <!-- Live mic level, only shown when the address ends in ?debug -->
+    <div id="mic-meter" hidden></div>
 
     <script src="lib/page-flip.browser.js"></script>
     <script src="js/config.js"></script>

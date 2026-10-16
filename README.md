@@ -6,11 +6,12 @@ A little interactive book: cover → blow out the candle → video → envelope 
 
 | Step | What happens |
 | --- | --- |
+| 0. Site opens | Party popper confetti bursts from the bottom corners. |
 | 1. Closed card | Click / → key opens it: cover on the left, cake on the right (page-turn sound). The background song fades in. |
 | 2. Cake | She **blows into the mic**: candle goes out, smoke rises (blow-out sound). Clicking the flame also works as a backup. |
 | 3. Video | Fades in as a box over the darkened card; the song fades out and comes back after. Then the page turns by itself. |
-| 4. Envelope | Click → envelope sound, the closed envelope fades to the open one and the letter slides out. |
-| 5. Letter | Click the letter → it opens big over the darkened card. Click outside it (or Esc) to close. |
+| 4. Envelope | Click → envelope sound, the closed envelope changes to the open one. |
+| 5. Letter | Click the open envelope → the letter opens over the darkened card. Click outside it (or Esc) to close. |
 
 On a laptop it opens like a card (two pages). On a phone it shows one page at a time.
 ← key goes back a page.
@@ -38,7 +39,7 @@ assets/video/       put your video here
 - **Voice notes:** put them in `assets/voice/` and set their paths in `js/config.js`:
   - `openOnLaptop` plays on her first tap, **only on a phone**.
   - `blowHint` plays if she hasn't blown after `blowHintAfterSeconds`.
-- **Letter:** either type it into `letter:` in `js/config.js`, or design it in Canva and replace `assets/pages/5-letter.png`. That paper image is both the letter that slides out and the one that opens big; the text is written on it in dark ink.
+- **Letter:** either type it into `letter:` in `js/config.js`, or design it in Canva and replace `assets/pages/5-letter.png`. That paper image is the letter that opens; the text is written on it in dark ink.
 - **Sounds:** replace the files in `assets/sounds/` and keep the same names, or update the paths in `config.js`.
   Free sources: pixabay.com/sound-effects, freesound.org.
 - **New page images:** export at the same size (1414 × 2000) and overwrite the files in `assets/pages/`.
@@ -53,7 +54,7 @@ assets/video/       put your video here
 
 Don't just double-click `index.html`: the microphone needs it served from `localhost` or `https`.
 
-**Testing the blow:** if talking blows the candle out, raise `blow.sensitivity` in `config.js`. If blowing does nothing, lower it.
+**Testing the blow:** add `?debug` to the end of the address (e.g. `.../Kanika-birthday/?debug`) to see the live mic level and how loud it needs to be. If talking blows the candle out, raise `blow.sensitivity` in `config.js`. If blowing does nothing, lower it.
 
 ## Put it on GitHub and publish
 

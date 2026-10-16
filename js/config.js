@@ -44,9 +44,13 @@ const CONFIG = {
 
   // ---- Blowing out the candle -----------------------------------------
   blow: {
-    // How loud the blow has to be. Lower = easier to trigger.
+    // How loud the blow has to be (0..1). Lower = easier to trigger.
     // If it goes out from talking, raise it. If blowing does nothing, lower it.
-    sensitivity: 0.12,
+    // Add ?debug to the end of the address to see the live mic level.
+    sensitivity: 0.05,
+    // It also has to be this many times louder than the room's background
+    // noise (measured when the cake page opens), so music or a fan won't count.
+    aboveBackground: 3,
     // How long (milliseconds) she has to keep blowing.
     holdMs: 250,
     // Backup: clicking the flame also blows it out (e.g. if the mic is blocked).
