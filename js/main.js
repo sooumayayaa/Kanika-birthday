@@ -198,9 +198,15 @@ function previous() {
   turnBack();
 }
 
-$("book-holder").addEventListener("click", () => {
+// Click the left page to go back, the right page to go forward.
+// (On a phone there's one page, so the left edge goes back.)
+$("book-holder").addEventListener("click", (e) => {
   unlockMedia();
-  next();
+  const box = $("book-holder").getBoundingClientRect();
+  const x = (e.clientX - box.left) / box.width; // 0 = left edge, 1 = right edge
+  const backZone = spread ? 0.5 : 0.25;
+  if (x < backZone && pageFlip.getCurrentPageIndex() > 0) previous();
+  else next();
 });
 
 document.addEventListener("keydown", (e) => {
@@ -391,6 +397,13 @@ function playVideo() {
   video.play().catch(() => (playButton.hidden = false));
 }
 
+$("video-replay").addEventListener("click", () => {
+  video.currentTime = 0;
+  video.play().catch(() => (playButton.hidden = false));
+});
+
+$("video-skip").addEventListener("click", afterVideo);
+
 playButton.addEventListener("click", () => {
   playButton.hidden = true;
   video.play();
@@ -462,6 +475,15 @@ function layOutLetter() {
       p.append(word);
     }
   }
+  // The last page: "Bye!" and the P.S.
+  if (CONFIG.letterEnd.bye || CONFIG.letterEnd.ps) {
+    text = newSheet();
+    text.classList.add("bye");
+    text.innerHTML = `<div class="bye-word"></div><p></p>`;
+    text.querySelector(".bye-word").textContent = CONFIG.letterEnd.bye;
+    text.querySelector("p").textContent = CONFIG.letterEnd.ps;
+  }
+
   // An open notebook always has two pages, so add a blank one at the end if needed.
   if (sheetsAtOnce === 2 && sheets.length % 2 === 1) newSheet();
   showSheets(0);
@@ -475,11 +497,13 @@ function showSheets(first) {
     sheet.classList.toggle("right", i === first + 1);
   });
 
-  // "1–2 of 4  →" under the paper, so she knows there's more.
+  // "←  1–2 of 6  →" under the paper.
   const last = Math.min(first + sheetsAtOnce, sheets.length);
   const showing = last - first > 1 ? `${first + 1}–${last}` : `${first + 1}`;
-  const more = last < sheets.length ? "  click for more →" : "";
-  $("letter-count").textContent = sheets.length > sheetsAtOnce ? `${showing} of ${sheets.length}${more}` : "";
+  $("letter-count").textContent = `${showing} of ${sheets.length}`;
+  $("letter-nav").hidden = sheets.length <= sheetsAtOnce;
+  $("letter-prev").disabled = first === 0;
+  $("letter-next").disabled = last >= sheets.length;
 }
 
 function turnLetter(direction) {
@@ -507,9 +531,18 @@ function closeLetter() {
 }
 
 // Click the paper for the next sheets; click the dark area around it to close.
+// Left page = back, right page = forward; the arrows do the same.
+// Click the dark area around the notebook to close it.
 $("letter-overlay").addEventListener("click", (e) => {
-  if (e.target.closest(".letter-sheet, #letter-count")) turnLetter(1);
-  else closeLetter();
+  const sheet = e.target.closest(".letter-sheet");
+  if (e.target.closest("#letter-prev")) turnLetter(-1);
+  else if (e.target.closest("#letter-next")) turnLetter(1);
+  else if (e.target.closest("#letter-nav")) return;
+  else if (sheet && spread) turnLetter(sheet.classList.contains("left") ? -1 : 1);
+  else if (sheet) {
+    const box = sheet.getBoundingClientRect();
+    turnLetter(e.clientX - box.left < box.width * 0.25 ? -1 : 1);
+  } else closeLetter();
 });
 
 // Re-flow the letter if the window changes size while it's open.

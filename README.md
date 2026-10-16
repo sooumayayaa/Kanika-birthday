@@ -14,7 +14,8 @@ A little interactive book: cover → blow out the candle → video → envelope 
 | 5. Letter | Click the open envelope → the letter opens as a notebook (two pages on a laptop); click to turn pages over the darkened card. Click outside it (or Esc) to close. |
 
 On a laptop it opens like a card (two pages). On a phone it shows one page at a time.
-← key goes back a page.
+Click the left page (or the ← key) to go back, the right page to go forward. On a phone, tap the left edge to go back.
+The video has Replay and Skip buttons. The notebook ends with a "Bye!" page (`letterEnd` in `js/config.js`).
 
 ## Files
 

@@ -92,4 +92,10 @@ I know life changes and we can't always be as present as we used to be. But even
 At 23, I hope you build a life YOU want, not just the one everyone expects you to have. Tu itni smart aur capable hai, I hope you get to do everything you genuinely want to do and never feel like you have to fit into someone else's idea of your life. I still remember the letter you wrote and read out to me when I was leaving college. It was such a sweet thing to do, and maybe that's why I wanted to write you one too. even if its a bad and disorganised one. Chatgpt se likhwaya hai
 
 Happy 23rd birthday, aunty. I love you, you absolute menace. No matter how much life changes or how far apart we end up, you'll always be one of my people. ❤️`,
+
+  // The very last page of the notebook. Leave either as "" to hide it.
+  letterEnd: {
+    bye: "Bye!",
+    ps: "P.S. woh white roses main bhejwaye the",
+  },
 };

@@ -52,7 +52,13 @@
 
     <!-- Video in a box over the darkened card, after the candle goes out -->
     <div class="overlay" id="video-overlay" hidden>
-      <video id="video" playsinline preload="auto"></video>
+      <div id="video-wrap">
+        <video id="video" playsinline preload="auto"></video>
+        <div id="video-buttons">
+          <button id="video-replay">↺ Replay</button>
+          <button id="video-skip">Skip →</button>
+        </div>
+      </div>
       <button id="video-play" hidden aria-label="Play video">▶</button>
     </div>
 
@@ -61,7 +67,11 @@
     <div class="overlay" id="letter-overlay" hidden>
       <div id="letter-wrap">
         <div id="letter-sheets"></div>
-        <div id="letter-count"></div>
+        <div id="letter-nav">
+          <button id="letter-prev" aria-label="Previous page">←</button>
+          <span id="letter-count"></span>
+          <button id="letter-next" aria-label="Next page">→</button>
+        </div>
       </div>
     </div>
 
