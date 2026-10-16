@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Happy Birthday Kanika</title>
+
+    <!-- Font for the letter (change it in css/style.css → --letter-font) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <!-- The card. Each .page is one side of a page; the images come from js/config.js.
+         On a laptop it opens like a card (two pages side by side).
+         On a phone the .spread-only pages are removed and it shows one page at a time. -->
+    <main id="book-holder">
+      <div id="book">
+        <!-- Front of the card (closed) -->
+        <div class="page" id="page-cover" data-density="hard">
+          <img class="img-cover" alt="Happy birthday" draggable="false" />
+        </div>
+
+        <!-- Inside left: back of the cover, shows the cover again -->
+        <div class="page spread-only" id="page-cover-back" data-density="hard">
+          <img class="img-cover" alt="" draggable="false" />
+        </div>
+
+        <!-- Inside right: the cake. Lit image fades to unlit when she blows -->
+        <div class="page" id="page-cake" data-density="hard">
+          <img id="img-cake-unlit" alt="Cake, candle blown out" draggable="false" />
+          <img id="img-cake-lit" alt="Make a wish, blow the candles" draggable="false" />
+          <canvas id="smoke"></canvas>
+          <button id="candle-zone" aria-label="Blow out the candle"></button>
+        </div>
+
+        <!-- Back of the cake page: the blown-out cake, now on the left -->
+        <div class="page spread-only" id="page-cake-back" data-density="hard">
+          <img id="img-cake-back" alt="" draggable="false" />
+        </div>
+
+        <!-- Envelope. The closed image sits on top of the open one until she
+             clicks, then it fades away and the letter slides out -->
+        <div class="page" id="page-envelope" data-density="hard">
+          <img id="img-envelope" alt="Open me if you aren't crying already" draggable="false" />
+          <img id="envelope-closed" alt="" draggable="false" />
+          <img id="letter-peek" alt="A letter" draggable="false" />
+        </div>
+      </div>
+    </main>
+
+    <!-- Video in a box over the darkened card, after the candle goes out -->
+    <div class="overlay" id="video-overlay" hidden>
+      <video id="video" playsinline preload="auto"></video>
+      <button id="video-play" hidden aria-label="Play video">▶</button>
+    </div>
+
+    <!-- The letter, opened big over the darkened card. Click outside it to close -->
+    <div class="overlay" id="letter-overlay" hidden>
+      <div id="letter-card">
+        <img id="img-letter" alt="" draggable="false" />
+        <div id="letter-text"></div>
+      </div>
+    </div>
+
+    <script src="lib/page-flip.browser.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>
