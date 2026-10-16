@@ -25,8 +25,6 @@ $("img-cake-lit").src = CONFIG.pages.cakeLit;
 $("img-cake-unlit").src = CONFIG.pages.cakeUnlit;
 $("img-cake-back")?.setAttribute("src", CONFIG.pages.cakeUnlit);
 $("img-envelope").src = CONFIG.pages.envelopeOpen;
-$("img-letter").src = CONFIG.pages.letter;
-$("letter-text").textContent = CONFIG.letter;
 
 if (CONFIG.pages.envelopeClosed) $("envelope-closed").src = CONFIG.pages.envelopeClosed;
 else $("envelope-closed").remove();
@@ -207,7 +205,12 @@ $("book-holder").addEventListener("click", () => {
 
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") return closeLetter();
-  if (!$("video-overlay").hidden || !$("letter-overlay").hidden) return;
+  if (!$("letter-overlay").hidden) {
+    if (e.key === "ArrowRight") turnLetter(1);
+    if (e.key === "ArrowLeft") turnLetter(-1);
+    return;
+  }
+  if (!$("video-overlay").hidden) return;
   unlockMedia();
   if (["ArrowRight", " ", "Enter"].includes(e.key)) {
     e.preventDefault();
@@ -416,11 +419,74 @@ video.addEventListener("error", () => {
 function openEnvelope() {
   envelopeOpened = true;
   play(sounds.envelopeOpen);
-  $("page-envelope").classList.add("opened"); // closed fades to open, letter slides out (style.css)
+  $("page-envelope").classList.add("opened"); // closed fades to the open one (style.css)
 }
 
-function openLetter() {
-  showOverlay($("letter-overlay"));
+// The letter is laid out on sheets of paper: words are added one at a time,
+// and when a sheet is full the rest carries on onto a new sheet.
+let sheets = [];
+let firstSheet = 0; // the sheet showing on the left
+const sheetsAtOnce = spread ? 2 : 1;
+
+function newSheet() {
+  const sheet = document.createElement("div");
+  sheet.className = "letter-sheet";
+  sheet.innerHTML = `<img src="${CONFIG.pages.letter}" alt="" draggable="false" /><div class="letter-text"></div>`;
+  $("letter-sheets").append(sheet);
+  sheets.push(sheet);
+  return sheet.querySelector(".letter-text");
+}
+
+function layOutLetter() {
+  $("letter-sheets").innerHTML = "";
+  sheets = [];
+  let text = newSheet();
+  const full = () => text.scrollHeight > text.clientHeight + 1;
+
+  for (const paragraph of CONFIG.letter.trim().split(/\n\s*\n/)) {
+    let p = text.appendChild(document.createElement("p"));
+    for (const word of paragraph.split(/\s+/)) {
+      const piece = p.appendChild(document.createTextNode((p.textContent ? " " : "") + word));
+      if (!full()) continue;
+      // Doesn't fit: take the word back off and start a new sheet with it.
+      piece.remove();
+      if (!p.textContent) p.remove();
+      text = newSheet();
+      p = text.appendChild(document.createElement("p"));
+      p.append(word);
+    }
+  }
+  showSheets(0);
+}
+
+function showSheets(first) {
+  firstSheet = first;
+  sheets.forEach((sheet, i) => (sheet.hidden = i < first || i >= first + sheetsAtOnce));
+
+  // "1–2 of 4  →" under the paper, so she knows there's more.
+  const last = Math.min(first + sheetsAtOnce, sheets.length);
+  const showing = last - first > 1 ? `${first + 1}–${last}` : `${first + 1}`;
+  const more = last < sheets.length ? "  click for more →" : "";
+  $("letter-count").textContent = sheets.length > sheetsAtOnce ? `${showing} of ${sheets.length}${more}` : "";
+}
+
+function turnLetter(direction) {
+  const first = firstSheet + direction * sheetsAtOnce;
+  if (first < 0 || first >= sheets.length) return;
+  play(sounds.pageTurn);
+  $("letter-sheets").classList.add("turning"); // quick fade (style.css)
+  setTimeout(() => {
+    showSheets(first);
+    $("letter-sheets").classList.remove("turning");
+  }, 300);
+}
+
+async function openLetter() {
+  const overlay = $("letter-overlay");
+  overlay.hidden = false; // must be on screen to measure how much fits
+  await document.fonts.ready; // measure with the real handwriting font
+  layOutLetter();
+  showOverlay(overlay);
 }
 
 function closeLetter() {
@@ -428,9 +494,15 @@ function closeLetter() {
   if (!overlay.hidden) hideOverlay(overlay);
 }
 
-// Click the dark area around the letter to close it; clicks on the letter stay.
+// Click the paper for the next sheets; click the dark area around it to close.
 $("letter-overlay").addEventListener("click", (e) => {
-  if (!e.target.closest("#letter-card")) closeLetter();
+  if (e.target.closest(".letter-sheet, #letter-count")) turnLetter(1);
+  else closeLetter();
+});
+
+// Re-flow the letter if the window changes size while it's open.
+window.addEventListener("resize", () => {
+  if (!$("letter-overlay").hidden) layOutLetter();
 });
 
 // ---- Party popper confetti when the site opens --------------------------

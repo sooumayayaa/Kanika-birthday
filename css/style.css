@@ -7,7 +7,7 @@
 
   --letter-font: "Caveat", cursive;
   --letter-color: #3b2a20; /* dark ink on the cream paper */
-  --letter-size: 4.6cqw; /* % of the letter width, so it scales on every screen */
+  --letter-size: 3.3cqw; /* % of the paper's width, so it scales on every screen */
 }
 
 /* ---- Page layout ----------------------------------------------------- */
@@ -178,8 +178,7 @@ body.single #book-holder {
   transition: transform 0.8s ease;
 }
 
-.overlay.show #video,
-.overlay.show #letter-card {
+.overlay.show #video {
   transform: scale(1);
 }
 
@@ -204,20 +203,55 @@ body.single #book-holder {
   cursor: pointer; /* click the dark area to close */
 }
 
-#letter-card {
+#letter-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+#letter-sheets {
+  display: flex;
+  gap: 2vw;
+  transform: scale(0.85);
+  transition:
+    transform 0.8s ease,
+    opacity 0.3s ease;
+}
+
+.overlay.show #letter-sheets {
+  transform: scale(1);
+}
+
+#letter-sheets.turning {
+  opacity: 0;
+}
+
+/* One sheet of paper. Laptop shows two side by side, phone shows one. */
+.letter-sheet {
   position: relative;
-  width: min(90vw, 90dvh * var(--page-ratio));
+  width: min(90vw, 82dvh * var(--page-ratio));
   aspect-ratio: var(--page-ratio);
-  container-type: inline-size; /* lets the letter text size with the card */
+  container-type: inline-size; /* lets the text size with the paper */
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
-  transform: scale(0.85);
-  transition: transform 0.8s ease;
-  cursor: auto;
 }
 
-#img-letter {
+body.spread .letter-sheet {
+  width: min(44vw, 82dvh * var(--page-ratio));
+}
+
+/* Phone: the paper is narrow, so the writing is a bit bigger. */
+body.single .letter-text {
+  font-size: calc(var(--letter-size) * 1.35);
+}
+
+.letter-sheet[hidden] {
+  display: none;
+}
+
+.letter-sheet img {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -226,21 +260,28 @@ body.single #book-holder {
 }
 
 /* The cream paper area, below the hand. */
-#letter-text {
+.letter-text {
   position: absolute;
   top: 21%;
-  bottom: 17%;
+  bottom: 22%; /* stops above the pink doodle */
   left: 14%;
   right: 14%;
-  overflow-y: auto;
-  white-space: pre-line;
+  overflow: hidden;
   font-family: var(--letter-font);
   font-size: var(--letter-size);
-  line-height: 1.45;
+  line-height: 1.35;
   color: var(--letter-color);
-  scrollbar-width: none;
 }
 
-#letter-text::-webkit-scrollbar {
-  display: none;
+.letter-text p {
+  margin: 0 0 0.55em;
+}
+
+/* "1–2 of 4  click for more →" under the paper */
+#letter-count {
+  min-height: 1.4em;
+  font-family: var(--letter-font);
+  font-size: 22px;
+  color: #f3e6d3;
+  white-space: pre;
 }

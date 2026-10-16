@@ -56,11 +56,12 @@
       <button id="video-play" hidden aria-label="Play video">▶</button>
     </div>
 
-    <!-- The letter, opened big over the darkened card. Click outside it to close -->
+    <!-- The letter, opened big over the darkened card. The sheets of paper are
+         made by js/main.js (as many as the letter needs). Click outside to close -->
     <div class="overlay" id="letter-overlay" hidden>
-      <div id="letter-card">
-        <img id="img-letter" alt="" draggable="false" />
-        <div id="letter-text"></div>
+      <div id="letter-wrap">
+        <div id="letter-sheets"></div>
+        <div id="letter-count"></div>
       </div>
     </div>
 
