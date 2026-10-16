@@ -7,7 +7,7 @@
 
   --letter-font: "Caveat", cursive;
   --letter-color: #3b2a20; /* dark ink on the cream paper */
-  --letter-size: 3.3cqw; /* % of the paper's width, so it scales on every screen */
+  --letter-size: 3.8cqw; /* % of the paper's width, so it scales on every screen */
 }
 
 /* ---- Page layout ----------------------------------------------------- */
@@ -208,11 +208,13 @@ body.single #book-holder {
   flex-direction: column;
   align-items: center;
   gap: 12px;
+  padding-top: 11dvh; /* room for the hand sticking out above the first page */
 }
 
+/* The notebook: pages sit right next to each other. */
 #letter-sheets {
   display: flex;
-  gap: 2vw;
+  filter: drop-shadow(0 24px 50px rgba(0, 0, 0, 0.6));
   transform: scale(0.85);
   transition:
     transform 0.8s ease,
@@ -227,50 +229,93 @@ body.single #book-holder {
   opacity: 0;
 }
 
-/* One sheet of paper. Laptop shows two side by side, phone shows one. */
+/* One page. Laptop shows two (an open notebook), phone shows one. */
 .letter-sheet {
   position: relative;
-  width: min(90vw, 82dvh * var(--page-ratio));
+  width: min(90vw, 74dvh * var(--page-ratio));
   aspect-ratio: var(--page-ratio);
-  container-type: inline-size; /* lets the text size with the paper */
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+  container-type: inline-size; /* lets the text size with the page */
+  border-radius: 8px;
 }
 
 body.spread .letter-sheet {
-  width: min(44vw, 82dvh * var(--page-ratio));
+  width: min(44vw, 74dvh * var(--page-ratio));
 }
 
-/* Phone: the paper is narrow, so the writing is a bit bigger. */
-body.single .letter-text {
-  font-size: calc(var(--letter-size) * 1.35);
+body.spread .letter-sheet.left {
+  border-radius: 8px 0 0 8px;
+}
+
+body.spread .letter-sheet.right {
+  border-radius: 0 8px 8px 0;
 }
 
 .letter-sheet[hidden] {
   display: none;
 }
 
-.letter-sheet img {
+.letter-sheet .paper {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: inherit;
 }
 
-/* The cream paper area, below the hand. */
+/* The fold in the middle of the open notebook. */
+body.spread .letter-sheet.left::after,
+body.spread .letter-sheet.right::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 14%;
+  pointer-events: none;
+}
+
+body.spread .letter-sheet.left::after {
+  right: 0;
+  background: linear-gradient(to left, rgba(70, 45, 20, 0.3), rgba(70, 45, 20, 0));
+}
+
+body.spread .letter-sheet.right::after {
+  left: 0;
+  background: linear-gradient(to right, rgba(70, 45, 20, 0.3), rgba(70, 45, 20, 0));
+}
+
+/* The hand holding the top of the first page. */
+.letter-sheet .hand {
+  position: absolute;
+  left: 2%;
+  top: -15.5%;
+  width: 62%;
+  height: auto;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Where the writing goes. */
 .letter-text {
   position: absolute;
-  top: 21%;
-  bottom: 22%; /* stops above the pink doodle */
-  left: 14%;
-  right: 14%;
+  top: 9%;
+  bottom: 7%;
+  left: 11%;
+  right: 11%;
   overflow: hidden;
   font-family: var(--letter-font);
   font-size: var(--letter-size);
   line-height: 1.35;
   color: var(--letter-color);
+}
+
+.letter-sheet.first .letter-text {
+  top: 16%; /* below the hand */
+}
+
+/* Phone: the page is narrow, so the writing is a bit bigger. */
+body.single .letter-text {
+  font-size: calc(var(--letter-size) * 1.35);
 }
 
 .letter-text p {

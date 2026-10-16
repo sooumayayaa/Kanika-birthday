@@ -11,7 +11,7 @@ A little interactive book: cover → blow out the candle → video → envelope 
 | 2. Cake | She **blows into the mic**: candle goes out, smoke rises (blow-out sound). Clicking the flame also works as a backup. |
 | 3. Video | Fades in as a box over the darkened card; the song fades out and comes back after. Then the page turns by itself. |
 | 4. Envelope | Click → envelope sound, the closed envelope changes to the open one. |
-| 5. Letter | Click the open envelope → the letter opens over the darkened card. Click outside it (or Esc) to close. |
+| 5. Letter | Click the open envelope → the letter opens as a notebook (two pages on a laptop); click to turn pages over the darkened card. Click outside it (or Esc) to close. |
 
 On a laptop it opens like a card (two pages). On a phone it shows one page at a time.
 ← key goes back a page.
@@ -39,7 +39,7 @@ assets/video/       put your video here
 - **Voice notes:** put them in `assets/voice/` and set their paths in `js/config.js`:
   - `openOnLaptop` plays on her first tap, **only on a phone**.
   - `blowHint` plays if she hasn't blown after `blowHintAfterSeconds`.
-- **Letter:** either type it into `letter:` in `js/config.js`, or design it in Canva and replace `assets/pages/5-letter.png`. That paper image is the letter that opens; the text is written on it in dark ink.
+- **Letter:** it's in `letter:` in `js/config.js` and flows onto as many notebook pages as it needs. The notebook page (`5-letter-paper.png`) and the hand sticker on page 1 (`5-letter-hand.png`) were made from `5-letter.png`.
 - **Sounds:** replace the files in `assets/sounds/` and keep the same names, or update the paths in `config.js`.
   Free sources: pixabay.com/sound-effects, freesound.org.
 - **New page images:** export at the same size (1414 × 2000) and overwrite the files in `assets/pages/`.

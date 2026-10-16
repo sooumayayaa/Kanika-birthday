@@ -11,7 +11,9 @@ const CONFIG = {
     cakeUnlit: "assets/pages/3-cake-unlit.png", // shown after she blows
     envelopeClosed: "assets/pages/4-envelope-closed.png", // until she clicks
     envelopeOpen: "assets/pages/4-envelope-open.png", // fades in when she clicks
-    letter: "assets/pages/5-letter.png", // the paper that slides out and opens big
+    // The letter is a notebook. Both images were made from 5-letter.png.
+    letterPaper: "assets/pages/5-letter-paper.png", // a plain notebook page
+    letterHand: "assets/pages/5-letter-hand.png", // sticker on the first page only
   },
 
   // ---- Background song -------------------------------------------------
@@ -62,9 +64,9 @@ const CONFIG = {
   secondsBeforeVideo: 2.5, // time to watch the smoke rise before the video fades in
 
   // ---- The letter ------------------------------------------------------
-  // Written on the paper (pages.letter). Leave a blank line between paragraphs.
-  // It flows onto as many sheets as it needs: two side by side on a laptop,
-  // one at a time on a phone. Clicking the paper turns to the next sheets.
+  // Written in the notebook. Leave a blank line between paragraphs.
+  // It flows onto as many pages as it needs: an open notebook (two pages)
+  // on a laptop, one page at a time on a phone. Clicking turns the page.
   letter: `Bhai, bahut jaldi buddhe ho rahe ho aap toh. 23 years old. Baal toh abhi se jhadne shuru ho gaye hain, shaadi karle jaldi. Ashish ready baitha hai. Shit yaar, fourth year aa gaya. Hum first year mein mile the aur ab graduate hone wale hain, majdoori karni padegi jeevan bhar. Tu interviews de rahi hai aur main doosri continent mein baithi hoon. What the fuck?
 
 Aur tu hamesha kehti thi ki tu mujhse milne aayegi, par behen ki lodi, jab main India aayi tab bhi tu nahi mili. December mein mil liyo bas, ab aur drama nahi chahiye.

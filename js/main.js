@@ -431,7 +431,13 @@ const sheetsAtOnce = spread ? 2 : 1;
 function newSheet() {
   const sheet = document.createElement("div");
   sheet.className = "letter-sheet";
-  sheet.innerHTML = `<img src="${CONFIG.pages.letter}" alt="" draggable="false" /><div class="letter-text"></div>`;
+  sheet.innerHTML = `<img class="paper" src="${CONFIG.pages.letterPaper}" alt="" draggable="false" />`;
+  // Only the first page gets the hand holding it.
+  if (sheets.length === 0) {
+    sheet.classList.add("first");
+    sheet.innerHTML += `<img class="hand" src="${CONFIG.pages.letterHand}" alt="" draggable="false" />`;
+  }
+  sheet.innerHTML += `<div class="letter-text"></div>`;
   $("letter-sheets").append(sheet);
   sheets.push(sheet);
   return sheet.querySelector(".letter-text");
@@ -456,12 +462,18 @@ function layOutLetter() {
       p.append(word);
     }
   }
+  // An open notebook always has two pages, so add a blank one at the end if needed.
+  if (sheetsAtOnce === 2 && sheets.length % 2 === 1) newSheet();
   showSheets(0);
 }
 
 function showSheets(first) {
   firstSheet = first;
-  sheets.forEach((sheet, i) => (sheet.hidden = i < first || i >= first + sheetsAtOnce));
+  sheets.forEach((sheet, i) => {
+    sheet.hidden = i < first || i >= first + sheetsAtOnce;
+    sheet.classList.toggle("left", i === first); // for the fold shadow (style.css)
+    sheet.classList.toggle("right", i === first + 1);
+  });
 
   // "1–2 of 4  →" under the paper, so she knows there's more.
   const last = Math.min(first + sheetsAtOnce, sheets.length);
