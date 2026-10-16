@@ -124,6 +124,45 @@ body.single #book-holder {
   cursor: pointer; /* click the open envelope to read the letter */
 }
 
+/* ---- ← → beside the card -------------------------------------------- */
+.card-nav {
+  position: fixed;
+  top: 50%;
+  z-index: 5;
+  width: 48px;
+  height: 48px;
+  margin-top: -24px;
+  border: 1px solid rgba(243, 230, 211, 0.6);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.35);
+  color: #f3e6d3;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.card-nav:hover {
+  background: rgba(243, 230, 211, 0.15);
+}
+
+.card-nav[hidden] {
+  display: none;
+}
+
+#card-prev {
+  left: 1.5vw;
+}
+
+#card-next {
+  right: 1.5vw;
+}
+
+/* Phone: at the bottom corners instead, so they don't cover the page. */
+body.single .card-nav {
+  top: auto;
+  bottom: 16px;
+  margin-top: 0;
+}
+
 /* ---- Confetti -------------------------------------------------------- */
 #confetti {
   position: fixed;

@@ -150,8 +150,19 @@ pageFlip.on("changeState", (e) => {
   busy = e.data !== "read";
 });
 
+// Show ← only when there's a page to go back to, and → only when she can go
+// on (not on the cake before she blows). On the envelope, → opens it.
+function updateCardButtons() {
+  const page = currentPage();
+  const moving = busy; // a page is turning, or the video is playing
+  $("card-prev").hidden = moving || pageFlip.getCurrentPageIndex() === 0;
+  $("card-next").hidden = moving || (page === "page-cake" && !blown);
+}
+pageFlip.on("changeState", updateCardButtons);
+
 // Runs every time a page turn finishes.
 pageFlip.on("flip", () => {
+  updateCardButtons();
   if (currentPage() === "page-cake" && !blown) startListeningForBlow();
   else stopListeningForBlow();
 });
@@ -192,6 +203,18 @@ function next() {
     else openLetter();
   }
 }
+
+updateCardButtons(); // show → on the closed card
+
+$("card-prev").addEventListener("click", () => {
+  unlockMedia();
+  previous();
+});
+
+$("card-next").addEventListener("click", () => {
+  unlockMedia();
+  next();
+});
 
 function previous() {
   if (busy || pageFlip.getCurrentPageIndex() === 0) return;
@@ -305,6 +328,7 @@ function blowOutCandle() {
 
   play(sounds.blowOut);
   $("page-cake").classList.add("blown"); // fades to the unlit image (style.css)
+  updateCardButtons();
   smoke();
 
   busy = true;
@@ -433,6 +457,7 @@ function openEnvelope() {
   envelopeOpened = true;
   play(sounds.envelopeOpen);
   $("page-envelope").classList.add("opened"); // closed fades to the open one (style.css)
+  updateCardButtons();
 }
 
 // The letter is laid out on sheets of paper: words are added one at a time,
